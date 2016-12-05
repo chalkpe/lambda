@@ -38,9 +38,15 @@ function parseApplication(ski){
     return stack;
 }
 
-module.exports = {
-    parseApplication
-};
+function evalApplication(stack){
+    if(typeof stack === 'string') stack = parseApplication(stack);
 
-let xyz_x = parseApplication(`(S (K K) (S (K K) I))`);
-console.log(xyz_x);
+    let value = I;
+    stack.forEach(s => value = value(Array.isArray(s) ? evalApplication(s) : s));
+    return value;
+}
+
+module.exports = {
+    eval: evalApplication,
+    parse: parseApplication
+};

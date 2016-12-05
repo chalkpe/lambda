@@ -1,9 +1,11 @@
 const expect = require('chai').expect;
 
+const T = require('./t');
+const app = require('./app');
+const eval = require('./eval');
+
 describe('lambda', function(){
     describe('app.js', function(){
-        const app = require('./app');
-
         it('(E)', function(){
             expect(app(`(S)`)).to.equal(`S`);
             expect(app(`(λx.x)`)).to.equal(`λx.x`);
@@ -17,8 +19,17 @@ describe('lambda', function(){
         });
     });
 
+    describe('eval.js', function(){
+        it(`λx.λy.λa.λb.(x (y a) (y b))`, function(){
+            expect(eval.eval(T(`λx.λy.λa.λb.(x (y a) (y b))`))(x => y => x + y)(String.fromCharCode)(65)(66)).to.equal('AB');
+        });
+
+        it('(S (K K) I) x y = x', function(){
+            expect(eval.eval(`(S (K K) I)`)(123)(456)).to.equal(123);
+        });
+    });
+
     describe('t.js', function(){
-        const T = require('./t');
 
         it('1. T[x] => x', function(){
             expect(T(`x`)).to.equal('x');
