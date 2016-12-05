@@ -57,15 +57,24 @@ describe('lambda', function(){
         });
 
         it('5. T[λx.λy.E] => T[λx.T[λy.E]] (if x occurs free in E)', function(){
-            expect(T(`λx.λy.x`)).to.equal('(S (K K) I)');
+            expect(T(`λx.λy.x`)).to.equal('K');
             expect(T(`λx.λx.x`)).to.equal('(K I)');
             expect(T(`λy.λy.y`)).to.equal('(K I)');
             expect(T(`λy.λx.x`)).to.equal('(K I)');
         });
 
         it('6. T[λx.(E₁ E₂)] => (S T[λx.E₁] T[λx.E₂]) (if x occurs free in E₁ or E₂)', function(){
-            expect(T(`λx.(S x)`)).to.equal('(S (K S) I)');
-            expect(T(`λx.λy.(y x)`)).to.equal('(S (K (S I)) (S (K K) I))');
+            expect(T(`λx.(x S)`)).to.equal('(S I (K S))');
+            expect(T(`λx.(λx.x λx.x)`)).to.equal('(S (K I) (K I))');
         });
+
+        it('η-reduction', function(){
+            expect(T(`λx.(E x)`)).to.equal('E');
+            expect(T(`λx.λy.λz.(x z (y z))`)).to.equal('S');
+            expect(T(`λf.λx.(f x)`)).to.equal('I')
+            expect(T(`λx.λy.(y x)`)).to.equal('(S (K (S I)) K)');
+            expect(T(`λx.λy.λz.(x (y z))`)).to.equal('(S (K S) K)'); //B
+            // expect(T(`λx.λy.λz.(x z y)`)).to.equal('(S (S (K (S (K S) K)) S) (K K))'); //C
+        })
     });
 });

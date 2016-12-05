@@ -1,6 +1,6 @@
 const $ = require('./tokens');
-const util = require('./util');
 const app = require('./app');
+const util = require('./util');
 
 // 1. T[x] => x
 // 2. T[(E₁ E₂)] => (T[E₁] T[E₂])
@@ -11,7 +11,7 @@ const app = require('./app');
 
 function T(term){
     if(!term) return '';
-    if(!util.isEnclosed(term)) throw new EvalError('Invalid braces!');
+    if(!util.isEnclosed(term)) throw new EvalError('Invalid parentheses!');
 
     if(term.length === 1) return term; //1
     switch(term[0]){
@@ -30,6 +30,7 @@ function T(term){
                 let a = app(lambda);
                 if(!Array.isArray(a)) return T(util.abstract(variable, a)); //*: T[λx.(E)] = T[λx.E]
                 if(a.every(e => !e.includes(variable))) return util.enclose($.K, T(lambda)); //3
+                if(!a[0].includes(variable) && a[1] === variable) return T(a[0]); //η-reduction
                 return util.enclose($.S, T(util.abstract(variable, a[0])), T(util.abstract(variable, a[1]))); //6
             }
 
